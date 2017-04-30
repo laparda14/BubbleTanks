@@ -101,43 +101,45 @@ function Model(){
         down: 83,   //s
     }
 
-    var x = 0;
-    var y = 0;
-    var speed = .1
+    this.x = 0;
+    this.y = 0;
+    this.scale = [1,1,1];
+    var speed = .1;
 
     this.input = function(keys){
         //check Pressed keys
         for (var key in keys){
             if(!keys.hasOwnProperty(key)) continue;
             if(key == keyMap.left){           //left/a
-                x -= speed;
+                this.x -= speed;
             }
             else if(key == keyMap.right){     //right/d
-                x += speed;
+                this.x += speed;
             }
             
             if(key == keyMap.up){             //up/w
-                y += speed;
+                this.y += speed;
             }
             else if(key == keyMap.down){      //down/s
-                y -= speed;
+                this.y -= speed;
             }
         }
     }
 
     this.getModelMatrix = function(){
-        var translationMatrix = translate(x, y, 0);        
-        var overallModelMatrix = translationMatrix; //removed rotation for spheres
+        var scaleMatrix = scalem(this.scale[0], this.scale[1], this.scale[2]);
+        var translationMatrix = translate(this.x, this.y, 0);        
+        var overallModelMatrix = mult(translationMatrix, scaleMatrix); //removed rotation for spheres
         return overallModelMatrix;
     }
 }
 
 function Projector(){
-    var top = 10; //to be used for left/right/top/bottom
+    var top = 10;       //to be used for left/right/top/bottom
     const maxTop = 100;
     const minTop = 1;
     const near = 0;     //plane where near = -z, to denote closest plane from objects
-    const far = 1000;    //plane where far = -z, to denote furthest plane from objects
+    const far = 1000;   //plane where far = -z, to denote furthest plane from objects
 
     this.init = function(cvs){
         top = 3;
@@ -162,7 +164,7 @@ function Projector(){
 
 function Camera(){
     //lookAt() Parameters
-    const eye = vec3(0, 0, 1.5);         //camera location as a vec4, for mouse rotation
+    const eye = vec3(0, 0, 10);         //camera location as a vec4, for mouse rotation
     const at = vec3(0.0, 0.0, 0.0);     //camera faces this location
     const up = vec3(0.0, 1.0, 0.0);     //orientation of camera, where up is above the camera
 
@@ -215,7 +217,18 @@ function Camera(){
     }   
 }
 
-var model = new Model();
+var models = [
+    new Model(),
+    new Model(),
+    //new Model()
+];
+for(var i = 0; i < models.length; i++){
+    models[i].x += i*.7;
+    models[i].y += i*.7;
+    var s = (i+1)/2
+    models[i].scale = [s,s,s];
+}
+
 var projector = new Projector();
 var camera = new Camera();
 
@@ -296,31 +309,35 @@ function render() {
 
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    eye = vec3(radius*Math.sin(theta)*Math.cos(phi),
-        radius*Math.sin(theta)*Math.sin(phi), radius*Math.cos(theta));
-    model.input(keys);
-    var modelMatrix = model.getModelMatrix();
+    models.forEach(function(model){
+        model.input(keys);
+    });
+    
     var viewMatrix = camera.getViewMatrix();
-    modelViewMatrix = mult(viewMatrix, modelMatrix);
     projectionMatrix = projector.getProjectionMatrix();
+    gl.uniformMatrix4fv(projectionMatrixLoc, false, flatten(projectionMatrix));
 
-    // normal matrix only really needed if there is nonuniform scaling   
-    // it's here for generality but since there is
-    // no scaling we could just use modelView matrix in shaders
-
-    normalMatrix = [
-        vec3(modelViewMatrix[0][0], modelViewMatrix[0][1], modelViewMatrix[0][2]),
-        vec3(modelViewMatrix[1][0], modelViewMatrix[1][1], modelViewMatrix[1][2]),
-        vec3(modelViewMatrix[2][0], modelViewMatrix[2][1], modelViewMatrix[2][2])
-    ];
+    models.forEach(function(model){
+        var modelMatrix = model.getModelMatrix();
+        modelViewMatrix = mult(viewMatrix, modelMatrix);
+        gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(modelViewMatrix));
 
 
-    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(modelViewMatrix) );
-    gl.uniformMatrix4fv(projectionMatrixLoc, false, flatten(projectionMatrix) );
-    gl.uniformMatrix3fv(normalMatrixLoc, false, flatten(normalMatrix) );
+        // normal matrix only needed if there is nonuniform scaling   
+        // it's here for generality but since there is
+        // no scaling we could just use modelView matrix in shaders
 
-    for( var i=0; i<index; i+=3)
-        gl.drawArrays( gl.TRIANGLES, i, 3 );
+        normalMatrix = [
+            vec3(modelViewMatrix[0][0], modelViewMatrix[0][1], modelViewMatrix[0][2]),
+            vec3(modelViewMatrix[1][0], modelViewMatrix[1][1], modelViewMatrix[1][2]),
+            vec3(modelViewMatrix[2][0], modelViewMatrix[2][1], modelViewMatrix[2][2])
+        ];
+        gl.uniformMatrix3fv(normalMatrixLoc, false, flatten(normalMatrix));
+
+        for( var i=0; i<index; i+=3)
+            gl.drawArrays( gl.TRIANGLES, i, 3 );
+
+    });
 
     window.requestAnimFrame(render);
 }
