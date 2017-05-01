@@ -35,8 +35,6 @@
         N = normalize(normalMatrix*vNormal.xyz);
 
         gl_Position = projectionMatrix * modelViewMatrix * vPosition;
-        
-
     }
     </script>
 
@@ -81,9 +79,25 @@
       src="https://code.jquery.com/jquery-3.2.1.min.js"
       integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
       crossorigin="anonymous"></script> <!-- import jquery -->
+
+    <!-- WebGL Utils -->
     <script type="text/javascript" src="Common/webgl-utils.js"></script>
     <script type="text/javascript" src="Common/initShaders.js"></script>
     <script type="text/javascript" src="Common/MV.js"></script>
+
+    <!-- Classes and such -->
+    <script src="js/gfx_utils.js" type="text/javascript"></script> 
+    <script src="js/utils.js" type="text/javascript"></script> 
+	<script src="js/text.js" type="text/javascript"></script> 
+	<script src="js/ball.js" type="text/javascript"></script> 
+	<script src="js/turret.js" type="text/javascript"></script>
+	<script src="js/bulletgroup.js" type="text/javascript"></script>
+	<script src="js/character.js" type="text/javascript"></script>
+	<script src="js/player.js" type="text/javascript"></script>
+	<script src="js/npc.js" type="text/javascript"></script> 
+	<!-- <script src="js/game.js" type="text/javascript"></script> -->
+	
+    <!-- Main File -->
     <script type="text/javascript" src="test.js"></script>
 
     <body>

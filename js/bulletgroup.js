@@ -8,10 +8,12 @@ function BulletGroup(options){
 		bullet.lifetime = bulletLifetime;
 		bulletsShot++;
 	}
-	this.render = function(){
+	this.getModelMatrices = function(){
+		var modelMatrices = [];
 	    this.bullets.forEach(function(bullet){
-	    	bullet.render();
+	    	modelMatrices = modelMatrices.concat({modelMatrix: bullet.getModelMatrix()});
 	    });
+	    return modelMatrices;
 	}
 
 	this.move = function(){

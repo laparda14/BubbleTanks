@@ -1,18 +1,24 @@
-function Character(origX, origY, ctx, id, options){
+function Character(origX, origY, id, moveSpeed){
 	this.id = id;
-	this.base = new Ball(origX, origY, ctx, 15, {color: options.color});
+	this.base = new Ball(origX, origY, 1);
 	this.bullets = new BulletGroup({});
-	
-	this.moveSpeed = 5 || options.moveSpeed;
-	
 	this.lives = 3;
-	this.context = ctx;
+	this.moveSpeed = moveSpeed;
 }
 
-Character.prototype.render = function(){
-    this.turret.render(this.base.x, this.base.y);
-    this.base.render();
-    this.bullets.render();
+Character.prototype.getModelMatrices = function(){
+	var modelMatrices = [];
+
+    var turretModelMatrix = this.turret.getModelMatrix(this.base.x, this.base.y);
+    modelMatrices = modelMatrices.concat({modelMatrix: turretModelMatrix});
+    var baseModelMatrix = this.base.getModelMatrix();
+    modelMatrices = modelMatrices.concat({modelMatrix: baseModelMatrix});
+    var bulletModelMatrices = this.bullets.getModelMatrices();
+    if(bulletModelMatrices.length > 0){
+    	modelMatrices = modelMatrices.concat(bulletModelMatrices);
+    }
+
+    return modelMatrices;
 }
 
 Character.prototype.tryShoot = function(){

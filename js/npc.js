@@ -1,7 +1,7 @@
-function NPC(origX, origY, ctx, id, options){
-	Character.call(this, origX, origY, ctx, id, options);
+function NPC(origX, origY, id, options){
+	Character.call(this, origX, origY, id, options);
 
-	this.turret = new Turret(ctx, {bulletSpeed: 3, rotationSpeed: 20, delay: 30});
+	this.turret = new Turret({bulletSpeed: .3, rotationSpeed: 20, delay: 30});
 }
 
 NPC.prototype = Object.create(Character.prototype);

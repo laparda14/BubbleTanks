@@ -3,7 +3,7 @@
 var canvas;
 var gl;
 
-var numTimesToSubdivide = 5;
+var numTimesToSubdivide = 3;
 
 var index = 0;
 
@@ -28,21 +28,15 @@ var materialDiffuse = vec4(1.0, 0.8, 0.0, 1.0);
 var materialSpecular = vec4(1.0, 1.0, 1.0, 1.0);
 var materialShininess = 20.0;
 
-var ctm;
 var ambientColor, diffuseColor, specularColor;
 
-var modelViewMatrix, projectionMatrix;
-var modelViewMatrixLoc, projectionMatrixLoc;
-
-var normalMatrix, normalMatrixLoc;
+var viewMatrix;
+var modelViewMatrix, normalMatrix, projectionMatrix;
+var modelViewMatrixLoc, normalMatrixLoc, projectionMatrixLoc;
 
 //reference for jquery mouse movement
 //http://stackoverflow.com/questions/7298507/move-element-with-keypress-multiple
 var keys = {};
-
-var eye;
-var at = vec3(0.0, 0.0, 0.0);
-var up = vec3(0.0, 1.0, 0.0);
 
 function triangle(a, b, c){
 
@@ -80,53 +74,11 @@ function divideTriangle(a, b, c, count){
     }
 }
 
-
 function tetrahedron(a, b, c, d, n){
     divideTriangle(a, b, c, n);
     divideTriangle(d, c, b, n);
     divideTriangle(a, d, b, n);
     divideTriangle(a, c, d, n);
-}
-
-function Model(){
-    var keyMap = {
-        left: 65,   //a
-        right: 68,  //d
-        up: 87,     //w
-        down: 83,   //s
-    }
-
-    this.x = 0;
-    this.y = 0;
-    this.scale = [1,1,1];
-    var speed = .1;
-
-    this.input = function(keys){
-        //check Pressed keys
-        for (var key in keys){
-            if(!keys.hasOwnProperty(key)) continue;
-            if(key == keyMap.left){           //left/a
-                this.x -= speed;
-            }
-            else if(key == keyMap.right){     //right/d
-                this.x += speed;
-            }
-            
-            if(key == keyMap.up){             //up/w
-                this.y += speed;
-            }
-            else if(key == keyMap.down){      //down/s
-                this.y -= speed;
-            }
-        }
-    }
-
-    this.getModelMatrix = function(){
-        var scaleMatrix = scalem(this.scale[0], this.scale[1], this.scale[2]);
-        var translationMatrix = translate(this.x, this.y, 0);        
-        var overallModelMatrix = mult(translationMatrix, scaleMatrix); //removed rotation for spheres
-        return overallModelMatrix;
-    }
 }
 
 function Projector(){
@@ -136,8 +88,13 @@ function Projector(){
     const near = 0;     //plane where near = -z, to denote closest plane from objects
     const far = 1000;   //plane where far = -z, to denote furthest plane from objects
 
+    var center = {
+        x: 0,
+        y: 0
+    }
+
     this.init = function(cvs){
-        top = 3;
+        top = 10;
         cvs.addEventListener("mousewheel", zoom, false);
     }
 
@@ -152,16 +109,21 @@ function Projector(){
         e.preventDefault();
     }
 
+    this.setCenter = function(x, y){
+        center.x = x;
+        center.y = y
+    }
+
     this.getProjectionMatrix = function(){
-        return ortho(-top, top, -top, top, near, far);
+        return ortho(-top + center.x, top + center.x, -top + center.y, top + center.y, near, far);
     }
 }
 
 function Camera(){
     //lookAt() Parameters
-    const eye = vec3(0, 0, 10);         //camera location as a vec4, for mouse rotation
-    const at = vec3(0.0, 0.0, 0.0);     //camera faces this location
-    const up = vec3(0.0, 1.0, 0.0);     //orientation of camera, where up is above the camera
+    var eye = vec3(0, 0, 10);         //camera location as a vec4, for mouse rotation
+    var at = vec3(0.0, 0.0, 0.0);     //camera faces this location
+    var up = vec3(0.0, 1.0, 0.0);     //orientation of camera, where up is above the camera
 
     var trackingMouse = false;
     var oldX, oldY;
@@ -212,17 +174,31 @@ function Camera(){
     }   
 }
 
-var models = [
-    new Model(),
-    new Model(),
-    //new Model()
-];
-for(var i = 0; i < models.length; i++){
-    models[i].x += i*.7;
-    models[i].y += i*.7;
-    var s = (i+1)/2
-    models[i].scale = [s,s,s];
+var p1Controls = {
+    left: 65,   //a
+    right: 68,  //d
+    up: 87,     //w
+    down: 83,   //s
+    cw: 81,     //q
+    ccw: 69,    //e
+    shoot: 32   //space
 }
+var p1 = new Player(-1, -1, -1, .1, p1Controls);
+
+var p2Controls = {
+    left: 37,   //arrow keys (on numpad)
+    right: 39,  
+    up: 38,
+    down: 12,   //clear (5 on numpad)
+    cw: 36,     //home
+    ccw: 33,    //pgup
+    shoot: 40   //down arrow 
+}
+var p2 = new Player(1, 1, -2, .1, p2Controls);
+
+var players = [];
+players.push(p1);
+players.push(p2);
 
 var projector = new Projector();
 var camera = new Camera();
@@ -232,7 +208,7 @@ window.onload = function init() {
 
     gl = WebGLUtils.setupWebGL(canvas);
     if(!gl){
-        alert( "WebGL isn't available" );
+        alert("WebGL isn't available");
     }
 
     gl.viewport(0, 0, canvas.width, canvas.height);
@@ -240,7 +216,7 @@ window.onload = function init() {
 
     gl.enable(gl.DEPTH_TEST);
 
-    //  Load shaders and initialize attribute buffers
+    // Load shaders and initialize attribute buffers
     var program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram(program);
 
@@ -299,39 +275,46 @@ window.onload = function init() {
     render();
 }
 
+function drawModel(modelMatrix){
+    var modelViewMatrix = mult(viewMatrix, modelMatrix);
+    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(modelViewMatrix));
+
+    // normal matrix only needed if there is nonuniform scaling   
+    // it's here for generality but since there is
+    // no scaling we could just use modelView matrix in shaders
+
+    normalMatrix = [
+        vec3(modelViewMatrix[0][0], modelViewMatrix[0][1], modelViewMatrix[0][2]),
+        vec3(modelViewMatrix[1][0], modelViewMatrix[1][1], modelViewMatrix[1][2]),
+        vec3(modelViewMatrix[2][0], modelViewMatrix[2][1], modelViewMatrix[2][2])
+    ];
+    gl.uniformMatrix3fv(normalMatrixLoc, false, flatten(normalMatrix));
+
+    for(var i=0; i<index; i+=3){
+        gl.drawArrays(gl.TRIANGLES, i, 3);
+    }
+}
+
 function render() {
-
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-    models.forEach(function(model){
-        model.input(keys);
-    });
     
-    var viewMatrix = camera.getViewMatrix();
+    projector.setCenter((players[0].base.x + players[1].base.x)/2, (players[0].base.y + players[1].base.y)/2);
     projectionMatrix = projector.getProjectionMatrix();
     gl.uniformMatrix4fv(projectionMatrixLoc, false, flatten(projectionMatrix));
 
-    models.forEach(function(model){
-        var modelMatrix = model.getModelMatrix();
-        modelViewMatrix = mult(viewMatrix, modelMatrix);
-        gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(modelViewMatrix));
+    viewMatrix = camera.getViewMatrix();
 
+    //draw models for players
+    players.forEach(function(player){
+        player.input(keys);
+        player.move();
 
-        // normal matrix only needed if there is nonuniform scaling   
-        // it's here for generality but since there is
-        // no scaling we could just use modelView matrix in shaders
-
-        normalMatrix = [
-            vec3(modelViewMatrix[0][0], modelViewMatrix[0][1], modelViewMatrix[0][2]),
-            vec3(modelViewMatrix[1][0], modelViewMatrix[1][1], modelViewMatrix[1][2]),
-            vec3(modelViewMatrix[2][0], modelViewMatrix[2][1], modelViewMatrix[2][2])
-        ];
-        gl.uniformMatrix3fv(normalMatrixLoc, false, flatten(normalMatrix));
-
-        for( var i=0; i<index; i+=3)
-            gl.drawArrays( gl.TRIANGLES, i, 3 );
-
+        var modelMatrices = player.getModelMatrices();
+        modelMatrices.forEach(function(model){
+            drawModel(model.modelMatrix);
+        });
     });
+    
 
     window.requestAnimFrame(render);
 }
