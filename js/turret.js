@@ -11,7 +11,7 @@ function Turret(options){
 	this.scale = [diameter, diameter, diameter];
 	this.baseOffset = options.baseOffset || 1.1;
 
-	this.getModelMatrix = function(x, y){
+	this.getModel = function(basex, basey, basematerial){
 		// var scaleMatrix = scalem(this.scale[0], this.scale[1], this.scale[2]);
         // var translationMatrix = translate(this.baseOffset, 0, 0);   
         // var rotationMatrix = rotateZ(angle);
@@ -22,12 +22,17 @@ function Turret(options){
         //therefore, below code provides a model matrix for a spherical turret, without rotation, so that normals need not be recomputed
         var scaleMatrix = scalem(this.scale[0], this.scale[1], this.scale[2]);
         var translationMatrix = translate(
-        	this.baseOffset * Math.cos(degreesToRadians(angle)) + x, 
-        	this.baseOffset * -Math.sin(degreesToRadians(angle)) + y, 
+        	this.baseOffset * Math.cos(degreesToRadians(angle)) + basex, 
+        	this.baseOffset * -Math.sin(degreesToRadians(angle)) + basey, 
         	0
         );
         var overallModelMatrix = mult(translationMatrix, scaleMatrix);
-        return overallModelMatrix;
+
+        var model = {
+        	modelMatrix: overallModelMatrix,
+        	material: basematerial
+        }
+        return model;
 	}
 
 	//can it shoot? If so, set the delay so it doesn't for a while
@@ -44,13 +49,13 @@ function Turret(options){
 	}
 
 	//wow it shot. Now return the bullet
-	this.getShotBullet = function(basex, basey, baseColor){
+	this.getShotBullet = function(basex, basey, baseMaterial){
 		var bulletLocation = {
 			x: basex + this.baseOffset * Math.cos(degreesToRadians(angle)),
 			y: basey - this.baseOffset * Math.sin(degreesToRadians(angle))
 		};
 
-		var bullet = new Ball(bulletLocation.x, bulletLocation.y, .4);
+		var bullet = new Ball(bulletLocation.x, bulletLocation.y, .4, baseMaterial);
 
 		bullet.dx = bulletSpeed * Math.cos(degreesToRadians(angle));
 		bullet.dy = -bulletSpeed * Math.sin(degreesToRadians(angle));

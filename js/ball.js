@@ -1,4 +1,4 @@
-function Ball(origx, origy, diameter){
+function Ball(origx, origy, rds, material){
 	//translation
 	this.x = origx;
 	this.y = origy;
@@ -6,7 +6,11 @@ function Ball(origx, origy, diameter){
 	this.dy = 0;
 
 	//scale
-	this.scale = [diameter,diameter,diameter];
+	this.scale = [rds,rds,rds];
+	this.radius = rds;
+
+	//material
+	this.material = material;
 
 	this.move = function(){
 		var worldEdge = 100;
@@ -28,10 +32,15 @@ function Ball(origx, origy, diameter){
 	    this.y += this.dy;
 	}
 
-	this.getModelMatrix = function(){
+	this.getModel = function(){
 		var scaleMatrix = scalem(this.scale[0], this.scale[1], this.scale[2]);
         var translationMatrix = translate(this.x, this.y, 0);        
         var overallModelMatrix = mult(translationMatrix, scaleMatrix); //removed rotation for spheres
-        return overallModelMatrix;
+
+        var model = {
+        	modelMatrix: overallModelMatrix,
+        	material: this.material
+        }
+        return model;
 	}
 }

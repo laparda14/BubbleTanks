@@ -1,5 +1,5 @@
-function Player(origX, origY, id, moveSpeed, keyMap){
-	Character.call(this, origX, origY, id, moveSpeed);
+function Player(origX, origY, id, moveSpeed, clr, keyMap){
+	Character.call(this, origX, origY, id, moveSpeed, clr);
 
 	this.turret = new Turret({});
 	this.keyMap = keyMap;

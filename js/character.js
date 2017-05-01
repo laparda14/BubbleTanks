@@ -1,29 +1,31 @@
-function Character(origX, origY, id, moveSpeed){
+function Character(origX, origY, id, moveSpeed, clr){
 	this.id = id;
-	this.base = new Ball(origX, origY, 1);
 	this.bullets = new BulletGroup({});
 	this.lives = 3;
 	this.moveSpeed = moveSpeed;
+	this.material = {
+		ambient: clr,
+		diffuse: clr,
+		specular:color.white,
+		shininess: 20.0
+	};	//material for everything in the character
+	this.base = new Ball(origX, origY, 1, this.material);
 }
 
-Character.prototype.getModelMatrices = function(){
+Character.prototype.getModels = function(){
 	var modelMatrices = [];
 
-    var turretModelMatrix = this.turret.getModelMatrix(this.base.x, this.base.y);
-    modelMatrices = modelMatrices.concat({modelMatrix: turretModelMatrix});
-    var baseModelMatrix = this.base.getModelMatrix();
-    modelMatrices = modelMatrices.concat({modelMatrix: baseModelMatrix});
-    var bulletModelMatrices = this.bullets.getModelMatrices();
-    if(bulletModelMatrices.length > 0){
-    	modelMatrices = modelMatrices.concat(bulletModelMatrices);
-    }
+	modelMatrices = modelMatrices.concat(this.base.getModel());
+    modelMatrices = modelMatrices.concat(this.turret.getModel(this.base.x, this.base.y, this.base.material));
+    var bulletModels = this.bullets.getModels();
+   	modelMatrices = modelMatrices.concat(bulletModels);
 
     return modelMatrices;
 }
 
 Character.prototype.tryShoot = function(){
 	if(this.turret.trigger()){
-		var bullet = this.turret.getShotBullet(this.base.x, this.base.y, this.base.color);
+		var bullet = this.turret.getShotBullet(this.base.x, this.base.y, this.base.material);
 		this.bullets.push(bullet);
 		return true;
 	}
