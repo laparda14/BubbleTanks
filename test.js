@@ -111,7 +111,7 @@ var p1Controls = {
     ccw: 69,    //e
     shoot: 32   //space
 }
-var p1 = new Player(-1, -1, -1, .1, color.blue, p1Controls);
+var p1 = new Player(-1, -1, -1, .2, color.blue, p1Controls);
 
 var p2Controls = {
     left: 37,   //arrow keys (on numpad)
@@ -122,15 +122,15 @@ var p2Controls = {
     ccw: 33,    //pgup
     shoot: 40   //down arrow 
 }
-var p2 = new Player(1, 1, -2, .1, color.red, p2Controls);
+var p2 = new Player(1, 1, -2, .2, color.red, p2Controls);
 
 var players = [];
 players.push(p1);
 // players.push(p2);
-// players.push(new NPC(-20,  0,1,color.yellow));
-players.push(new NPC( 20,  0,2,color.brown));
-// players.push(new NPC(  0,-20,3,color.black));
-// players.push(new NPC(  0, 20,4,color.white));
+players.push(new NPC2(-40,  0,1,color.yellow));
+players.push(new NPC1( 40,  0,2,color.brown));
+players.push(new NPC3(  0,-40,3,color.black));
+players.push(new NPC4(  0, 40,4,color.white));
 
 var projector = new Projector();
 var camera = new Camera();
@@ -244,7 +244,7 @@ function render() {
 
     //draw models for players
     players.forEach(function(player){
-        player.input(keys);
+        player.input({keys: keys, x: players[0].base.x, y: players[0].base.y});
         player.move();
 
         var models = player.getModels();

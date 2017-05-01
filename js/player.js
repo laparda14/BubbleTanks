@@ -1,6 +1,6 @@
 function Player(origX, origY, id, moveSpeed, clr, keyMap){
 	Character.call(this, origX, origY, id, clr);
-
+    
     this.moveSpeed = moveSpeed;
 	this.turret = new Turret({});
 	this.keyMap = keyMap;
@@ -10,11 +10,12 @@ function Player(origX, origY, id, moveSpeed, clr, keyMap){
 Player.prototype = Object.create(Character.prototype);
 Player.prototype.constructor = Player;
 
-Player.prototype.input = function(keys){
+Player.prototype.input = function(options){
 	this.base.dx = 0;
 	this.base.dy = 0;
 
     var baseMoved = false;
+    var keys = options.keys
 
 	//check Pressed keys
 	for (var key in keys) {

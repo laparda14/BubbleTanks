@@ -9,7 +9,10 @@ function Character(origX, origY, id, clr){
 		specular:color.white,
 		shininess: 20.0
 	};	//material for everything in the character
+
+	//defined in derived classes
 	this.base;
+	this.moveSpeed;
 }
 
 Character.prototype.getModels = function(){
@@ -35,4 +38,18 @@ Character.prototype.tryShoot = function(){
 Character.prototype.move = function(){
     this.base.move();
     this.bullets.move();
+}
+
+//calculate the angle the turret is off from the target using dot product
+Character.prototype.getAngleFromTarget = function(x,y){
+	var dx = x - this.base.x;
+	var dy = -(y - this.base.y);
+	var targetDistance = Math.sqrt(dx * dx + dy * dy);
+	var targetVector = vec2(dx/targetDistance, dy/targetDistance);	//normalized vector from npc to target
+
+	var turretAngle = this.turret.getAngle();
+	var turretVector = vec2(Math.cos(degreesToRadians(turretAngle)), Math.sin(degreesToRadians(turretAngle)));	//normalized vector of where npc turret is pointing
+
+	var dTheta = radiansToDegrees(Math.acos(targetVector[0] * turretVector[0] + targetVector[1] * turretVector[1]))
+	return dTheta;
 }
