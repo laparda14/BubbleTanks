@@ -205,7 +205,6 @@ function setMaterialProperties(model){
 }
 
 function drawModel(model){
-    setMaterialProperties(model);
     var modelViewMatrix = mult(viewMatrix, model.modelMatrix);
     gl.uniformMatrix4fv(glLocation.modelViewMatrix, false, flatten(modelViewMatrix));
 
@@ -243,7 +242,7 @@ function render() {
         player.move();
 
         var models = player.getModels();
-        // setMaterialProperties(models[0]);   //material properties assumed same for all objects for a player
+        setMaterialProperties(models[0]);   //material properties assumed same for all objects for a player
         models.forEach(function(model){
             drawModel(model);
         });
