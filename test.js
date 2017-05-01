@@ -100,6 +100,8 @@ function playerBallCollisionDetection(){
     }
 }
 
+
+//players
 var p1Controls = {
     left: 65,   //a
     right: 68,  //d
@@ -124,7 +126,11 @@ var p2 = new Player(1, 1, -2, .1, color.red, p2Controls);
 
 var players = [];
 players.push(p1);
-players.push(p2);
+// players.push(p2);
+// players.push(new NPC(-20,  0,1,color.yellow));
+players.push(new NPC( 20,  0,2,color.brown));
+// players.push(new NPC(  0,-20,3,color.black));
+// players.push(new NPC(  0, 20,4,color.white));
 
 var projector = new Projector();
 var camera = new Camera();

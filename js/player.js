@@ -1,8 +1,10 @@
 function Player(origX, origY, id, moveSpeed, clr, keyMap){
-	Character.call(this, origX, origY, id, moveSpeed, clr);
+	Character.call(this, origX, origY, id, clr);
 
+    this.moveSpeed = moveSpeed;
 	this.turret = new Turret({});
 	this.keyMap = keyMap;
+    this.base = new Ball(origX, origY, 1, this.material);
 }
 
 Player.prototype = Object.create(Character.prototype);

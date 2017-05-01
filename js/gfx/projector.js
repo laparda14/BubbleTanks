@@ -11,7 +11,7 @@ function Projector(){
     }
 
     this.init = function(cvs){
-        top = 10;
+        top = 30;
         cvs.addEventListener("mousewheel", zoom, false);
     }
 

@@ -1,15 +1,15 @@
-function Character(origX, origY, id, moveSpeed, clr){
+function Character(origX, origY, id, clr){
 	this.id = id;
 	this.bullets = new BulletGroup({});
 	this.lives = 3;
-	this.moveSpeed = moveSpeed;
+	
 	this.material = {
 		ambient: clr,
 		diffuse: clr,
 		specular:color.white,
 		shininess: 20.0
 	};	//material for everything in the character
-	this.base = new Ball(origX, origY, 1, this.material);
+	this.base;
 }
 
 Character.prototype.getModels = function(){
