@@ -10,11 +10,6 @@ var index = 0;
 var pointsArray = [];
 var normalsArray = [];
 
-//lookAt properties
-var radius = 1.5;
-var theta  = 0.0;
-var phi    = 0.0;
-
 //initial tetrahedron locations
 var va = vec4(0.0, 0.0, -1, 1);
 var vb = vec4(0.0, 0.942809, 0.333333, 1);
@@ -49,7 +44,7 @@ var eye;
 var at = vec3(0.0, 0.0, 0.0);
 var up = vec3(0.0, 1.0, 0.0);
 
-function triangle(a, b, c) {
+function triangle(a, b, c){
 
      pointsArray.push(a);
      pointsArray.push(b);
@@ -64,7 +59,7 @@ function triangle(a, b, c) {
 }
 
 
-function divideTriangle(a, b, c, count) {
+function divideTriangle(a, b, c, count){
     if(count > 0){
 
         var ab = mix(a, b, 0.5);
@@ -86,7 +81,7 @@ function divideTriangle(a, b, c, count) {
 }
 
 
-function tetrahedron(a, b, c, d, n) {
+function tetrahedron(a, b, c, d, n){
     divideTriangle(a, b, c, n);
     divideTriangle(d, c, b, n);
     divideTriangle(a, d, b, n);
@@ -233,26 +228,37 @@ var projector = new Projector();
 var camera = new Camera();
 
 window.onload = function init() {
-    canvas = document.getElementById( "gl-canvas" );
+    canvas = document.getElementById("gl-canvas");
 
-    gl = WebGLUtils.setupWebGL( canvas );
-    if ( !gl ) { alert( "WebGL isn't available" ); }
+    gl = WebGLUtils.setupWebGL(canvas);
+    if(!gl){
+        alert( "WebGL isn't available" );
+    }
 
-    gl.viewport( 0, 0, canvas.width, canvas.height );
-    gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.clearColor(1.0, 1.0, 1.0, 1.0);
 
     gl.enable(gl.DEPTH_TEST);
 
-    //
     //  Load shaders and initialize attribute buffers
-    //
     var program = initShaders( gl, "vertex-shader", "fragment-shader" );
-    gl.useProgram( program );
+    gl.useProgram(program);
 
 
     var ambientProduct = mult(lightAmbient, materialAmbient);
     var diffuseProduct = mult(lightDiffuse, materialDiffuse);
     var specularProduct = mult(lightSpecular, materialSpecular);
+
+    gl.uniform4fv( gl.getUniformLocation(program,
+       "ambientProduct"),flatten(ambientProduct) );
+    gl.uniform4fv( gl.getUniformLocation(program,
+       "diffuseProduct"),flatten(diffuseProduct) );
+    gl.uniform4fv( gl.getUniformLocation(program,
+       "specularProduct"),flatten(specularProduct) );
+    gl.uniform4fv( gl.getUniformLocation(program,
+       "lightPosition"),flatten(lightPosition) );
+    gl.uniform1f( gl.getUniformLocation(program,
+       "shininess"),materialShininess );
 
     tetrahedron(va, vb, vc, vd, numTimesToSubdivide);
 
@@ -290,20 +296,8 @@ window.onload = function init() {
     projector.init(canvas);
     camera.init(canvas);
 
-    gl.uniform4fv( gl.getUniformLocation(program,
-       "ambientProduct"),flatten(ambientProduct) );
-    gl.uniform4fv( gl.getUniformLocation(program,
-       "diffuseProduct"),flatten(diffuseProduct) );
-    gl.uniform4fv( gl.getUniformLocation(program,
-       "specularProduct"),flatten(specularProduct) );
-    gl.uniform4fv( gl.getUniformLocation(program,
-       "lightPosition"),flatten(lightPosition) );
-    gl.uniform1f( gl.getUniformLocation(program,
-       "shininess"),materialShininess );
-
     render();
 }
-
 
 function render() {
 
