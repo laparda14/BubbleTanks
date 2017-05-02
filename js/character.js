@@ -40,6 +40,13 @@ Character.prototype.move = function(){
     this.bullets.move();
 }
 
+Character.prototype.moveTowards = function(x,y){
+	var dx = x - this.base.x;
+	var dy = y - this.base.y;
+	this.base.x += this.moveSpeed * Math.sign(dx);
+	this.base.y += this.moveSpeed * Math.sign(dy);
+}
+
 //calculate the angle the turret is off from the target using dot product
 Character.prototype.getAngleFromTarget = function(x,y){
 	var dx = x - this.base.x;
