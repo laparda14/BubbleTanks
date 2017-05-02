@@ -1,6 +1,6 @@
 //immobile, sprays bullets in all directions
-function NPC1(origX, origY, id, clr){
-	Character.call(this, origX, origY, id, clr);
+function NPC1(origX, origY, id){
+	Character.call(this, origX, origY, id, color.brown);
 	this.turret = new Turret({bulletSpeed: .2, rotationSpeed: 10, delay: 60, baseOffset: 1.5, diameter: .7});
 	this.base = new Ball(origX, origY, 1.5, this.material);
 	this.moveSpeed = 0;
@@ -15,9 +15,9 @@ NPC1.prototype.input = function(options){
 };
 
 //slow, aims at player w/single bullets
-function NPC2(origX, origY, id, clr){
-	Character.call(this, origX, origY, id, clr);
-	this.turret = new Turret({bulletSpeed: .6, rotationSpeed: 1, delay: 200, baseOffset: 1.5, diameter: .7});
+function NPC2(origX, origY, id){
+	Character.call(this, origX, origY, id, color.black);
+	this.turret = new Turret({bulletSpeed: .6, rotationSpeed: 1, delay: 250, baseOffset: 1.5, diameter: .7});
 	this.base = new Ball(origX, origY, 1.5, this.material);
 	this.moveSpeed = .05;
 }
@@ -46,8 +46,8 @@ NPC2.prototype.input = function(options){
 };
 
 //three-bullet spread, medium speed
-function NPC3(origX, origY, id, clr){
-	Character.call(this, origX, origY, id, clr);
+function NPC3(origX, origY, id){
+	Character.call(this, origX, origY, id, color.green);
 	this.turret = new Turret({bulletSpeed: .4, rotationSpeed: 20, delay: 10, baseOffset: 1.5, diameter: .7});
 	this.base = new Ball(origX, origY, 1.5, this.material);
 	this.moveSpeed = .1;
@@ -66,8 +66,8 @@ NPC3.prototype.input = function(options){
 };
 
 //runs towards player to ram them, fast
-function NPC4(origX, origY, id, clr){
-	Character.call(this, origX, origY, id, clr);
+function NPC4(origX, origY, id){
+	Character.call(this, origX, origY, id, color.yellow);
 	this.turret = new Turret({bulletSpeed: .25, rotationSpeed: 20, delay: 10, baseOffset: 1.5, diameter: .7});
 	this.base = new Ball(origX, origY, 1.5, this.material);
 	this.moveSpeed = .2;

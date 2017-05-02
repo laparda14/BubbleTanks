@@ -22,8 +22,6 @@ var lightAmbient = color.drkgry;
 var lightDiffuse = color.white;
 var lightSpecular = color.white;
 
-var ambientColor, diffuseColor, specularColor;
-
 var viewMatrix;
 var modelViewMatrix, normalMatrix, projectionMatrix;
 
@@ -100,7 +98,6 @@ function playerBallCollisionDetection(){
     }
 }
 
-
 //players
 var p1Controls = {
     left: 65,   //a
@@ -127,13 +124,14 @@ var p2 = new Player(1, 1, -2, .2, color.red, p2Controls);
 var players = [];
 players.push(p1);
 // players.push(p2);
-players.push(new NPC2(-40,  0,1,color.yellow));
-players.push(new NPC1( 40,  0,2,color.brown));
-players.push(new NPC3(  0,-40,3,color.black));
-players.push(new NPC4(  0, 40,4,color.white));
+players.push(new NPC2(-40,  0,1));
+players.push(new NPC1( 40,  0,2));
+players.push(new NPC3(  0,-40,3));
+players.push(new NPC4(  0, 40,4));
 
 var projector = new Projector();
 var camera = new Camera();
+var fps = new FPS();
 
 window.onload = function init() {
     canvas = document.getElementById("gl-canvas");
@@ -253,7 +251,10 @@ function render() {
             drawModel(model);
         });
     });
-    
+    fps.update();
+    if(fps.get() < 20){
+        console.log("low fps!");
+    }
 
     window.requestAnimFrame(render);
 }
