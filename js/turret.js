@@ -1,7 +1,7 @@
 function Turret(options){
 	var angle = options.angle || 0;
 	var bulletSpeed = options.bulletSpeed || .8;
-	var rotationSpeed = options.rotationSpeed || 1;
+	var rotationSpeed = options.rotationSpeed || 2;
 	
 	var delay = options.delay || 200;
 	var canShoot = true;
@@ -12,14 +12,8 @@ function Turret(options){
 	this.baseOffset = options.baseOffset || 1.1;
 
 	this.getModel = function(basex, basey, basematerial){
-		// var scaleMatrix = scalem(this.scale[0], this.scale[1], this.scale[2]);
-        // var translationMatrix = translate(this.baseOffset, 0, 0);   
-        // var rotationMatrix = rotateZ(angle);
-        // var baseTranslationMatrix = translate(x, y, 0);
-        // var overallModelMatrix = mult(baseTranslationMatrix, mult(rotationMatrix, mult(translationMatrix, scaleMatrix)));
-
-        //NOTE: above code provides a model matrix for a generalized turret, but rotation of points would require recomputation of rotated normals
-        //therefore, below code provides a model matrix for a spherical turret, without rotation, so that normals need not be recomputed
+        //NOTE: rotation of points would require recomputation of rotated normals
+        //so provide a model matrix for a spherical turret, without rotation.
         var scaleMatrix = scalem(this.scale[0], this.scale[1], this.scale[2]);
         var translationMatrix = translate(
         	this.baseOffset * Math.cos(degreesToRadians(angle)) + basex, 

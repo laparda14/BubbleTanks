@@ -1,10 +1,9 @@
 function Text(context){
-
 	const defaultOptions = {
 		fontSize: 20,
 		font: "Arial",
 		align: "center",
-		color: "gray",
+		color: "white",
 		text: "default text",
 		x: context.canvas.width/2,
 		y: context.canvas.height/2
@@ -37,6 +36,18 @@ function Text(context){
 	}
 
 	this.drawMiddleMiddle = function(text){
-		drawText({text: text});
+		drawText({text: text, fontSize: 100});
+	}
+
+	this.drawRightBottom = function(text){
+		const x = context.canvas.width * .9;
+		const y = context.canvas.height - defaultOptions.fontSize;
+		drawText({text: text, x: x, y: y});
+	}
+
+	this.drawLeftTop = function(text){
+		const x = context.canvas.width * .1;
+		const y = 0 + defaultOptions.fontSize;
+		drawText({text: text, x: x, y: y});
 	}
 }

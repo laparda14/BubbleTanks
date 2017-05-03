@@ -2,6 +2,7 @@
 
 var canvas;
 var gl;
+var program;
 
 var numTimesToSubdivide = 3;
 
@@ -9,6 +10,16 @@ var index = 0;
 
 var pointsArray = [];
 var normalsArray = [];
+var texCoordsArray = [];
+
+var texture;
+
+var texCoord = [
+    vec2(0, 0),
+    vec2(0, 1),
+    vec2(1, 1),
+    vec2(1, 0)
+];
 
 //initial tetrahedron locations
 var va = vec4(0.0, 0.0, -1, 1);
@@ -27,9 +38,32 @@ var modelViewMatrix, normalMatrix, projectionMatrix;
 
 var glLocation = {};
 
+var projector, camera;
+var text, textContext;
+var fps = new FPS();
+
+var gameOver = false;
+var floor = new Floor();
+var spawner = new Spawner();
+
 //reference for jquery mouse movement
 //http://stackoverflow.com/questions/7298507/move-element-with-keypress-multiple
 var keys = {};
+var score = 0;
+
+function configureTexture(image){
+    texture = gl.createTexture();
+    gl.bindTexture( gl.TEXTURE_2D, texture );
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGB,
+         gl.RGB, gl.UNSIGNED_BYTE, image );
+    gl.generateMipmap( gl.TEXTURE_2D );
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER,
+                      gl.NEAREST_MIPMAP_LINEAR );
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST );
+
+    gl.uniform1i(gl.getUniformLocation(program, "texture"), 0);
+}
 
 function triangle(a, b, c){
      pointsArray.push(a);
@@ -40,6 +74,10 @@ function triangle(a, b, c){
      normalsArray.push(a[0],a[1], a[2], 0.0);
      normalsArray.push(b[0],b[1], b[2], 0.0);
      normalsArray.push(c[0],c[1], c[2], 0.0);
+
+     texCoordsArray.push(texCoord[0]);
+     texCoordsArray.push(texCoord[1]);
+     texCoordsArray.push(texCoord[2]);
 
      index += 3;
 }
@@ -90,6 +128,15 @@ function playerBallCollisionDetection(){
                         players[j].bullets.removeBulletById(k);
                         if(players[i].lives <= 0){
                             players.splice(i, 1);       //player hit!!! 
+                            if(!gameOver){
+                                score++;
+                            }
+                            
+                            setTimeout(function(){
+                                players.push(spawner.getNPC());
+                            }, 1000);
+                            
+                            return;
                         }
                     }
                 }
@@ -124,21 +171,23 @@ var p2 = new Player(1, 1, 2, .2, color.red, p2Controls);
 var players = [];
 players.push(p1);
 // players.push(p2);
-players.push(new NPC1( 40,  0,-1));
-players.push(new NPC2(-40,  0,-2));
-players.push(new NPC3(  0,-40,-3));
-players.push(new NPC4(  0, 40,-4));
 
-var floor = new Floor();
-
-var projector;
-var camera;
-var fps = new FPS();
+players.push(spawner.getNPC());
+players.push(spawner.getNPC());
+players.push(spawner.getNPC());
 
 window.onload = function init() {
+    //text canvas setup
+    var textCanvas = document.getElementById("text");
+    textCanvas.width  = window.innerWidth;
+    textCanvas.height = window.innerHeight;
+    textContext = textCanvas.getContext("2d");
+    text = new Text(textContext);
+
+    //webgl canvas setup
     canvas = document.getElementById("gl-canvas");
     canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.height = window.innerHeight;    
 
     gl = WebGLUtils.setupWebGL(canvas);
     if(!gl){
@@ -146,12 +195,12 @@ window.onload = function init() {
     }
 
     gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clearColor(1.0, 1.0, 1.0, 1.0);
+    gl.clearColor(color.ltblue[0], color.ltblue[1], color.ltblue[2], color.ltblue[3]);
 
     gl.enable(gl.DEPTH_TEST);
 
     // Load shaders and initialize attribute buffers
-    var program = initShaders( gl, "vertex-shader", "fragment-shader" );
+    program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram(program);
 
     tetrahedron(va, vb, vc, vd, numTimesToSubdivide);
@@ -168,15 +217,27 @@ window.onload = function init() {
     gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(pointsArray), gl.STATIC_DRAW);
 
-    var vPosition = gl.getAttribLocation( program, "vPosition");
+    var vPosition = gl.getAttribLocation(program, "vPosition");
     gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(vPosition);
+
+    var tBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, tBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(texCoordsArray), gl.STATIC_DRAW);
+
+    var vTexCoord = gl.getAttribLocation(program, "vTexCoord");
+    gl.vertexAttribPointer(vTexCoord, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(vTexCoord);
+
+    var image = document.getElementById("texImage");        //configure texture
+    configureTexture( image );
 
     glLocation.ambientProduct = gl.getUniformLocation(program, "ambientProduct");
     glLocation.diffuseProduct = gl.getUniformLocation(program, "diffuseProduct");
     glLocation.specularProduct = gl.getUniformLocation(program, "specularProduct");
     glLocation.lightPosition = gl.getUniformLocation(program, "lightPosition");
     glLocation.shininess = gl.getUniformLocation(program, "shininess");
+    glLocation.shininess2 = gl.getUniformLocation(program, "shininess2");
 
     glLocation.modelViewMatrix = gl.getUniformLocation( program, "modelViewMatrix" );
     glLocation.projectionMatrix = gl.getUniformLocation( program, "projectionMatrix" );
@@ -192,7 +253,7 @@ window.onload = function init() {
     });
 
     //objects setup
-    projector = new Projector(canvas);
+    projector = new Projector(textCanvas);
     camera = new Camera(canvas);
 
     render();
@@ -233,24 +294,41 @@ function drawModel(model){
 }
 
 function render() {
+    textContext.clearRect(0, 0, textContext.canvas.width, textContext.canvas.height);
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    playerBallCollisionDetection();
-    
-    if(players[0].id == 1){ //center projector on player 1
+    textContext.clearRect(0, 0, textContext.canvas.width, textContext.canvas.height);
+    text.drawMiddleBottom("WASD to move, w and e to rotate turret, mouse scroll to zoom");
+
+    //Player only actions (center camera, print game over
+    if(players[0].id == 1){
        camera.setCenter(players[0].base.x, players[0].base.y);
+       text.drawMiddleTop("lives: " + players[0].lives + "        score: " + score*100);
     }
-    //projector.setCenter((players[0].base.x + players[1].base.x)/2, (players[0].base.y + players[1].base.y)/2);
+    else{   //game over
+        gameOver = true;
+        text.drawMiddleMiddle("GAME OVER!");
+        text.drawMiddleTop("lives: " + 0 + "        score: " + score*100);
+    }
+    
+    text.drawLeftTop("fps: " + fps.get());
+
+    playerBallCollisionDetection();    //collision detection
+
+    //setup matrices which will stay the same throughout one render frame
     projectionMatrix = projector.getProjectionMatrix();
     gl.uniformMatrix4fv(glLocation.projectionMatrix, false, flatten(projectionMatrix));
 
     viewMatrix = camera.getViewMatrix();
 
+    //draw floor model
     var floorModel = floor.getModel();
+    gl.uniform1f(glLocation.shininess2, 2.0);
     setMaterialProperties(floorModel);
     drawModel(floorModel);
 
-    //draw models for players
+    //move and draw players
+    gl.uniform1f(glLocation.shininess2, 1.0);
     players.forEach(function(player){
         player.input({keys: keys, x: players[0].base.x, y: players[0].base.y});
         player.move();
@@ -261,10 +339,8 @@ function render() {
             drawModel(model);
         });
     });
+    //check fps
     fps.update();
-    if(fps.get() < 20){
-        console.log("low fps!");
-    }
 
     window.requestAnimFrame(render);
 }
