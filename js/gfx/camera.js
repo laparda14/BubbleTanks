@@ -1,19 +1,20 @@
 //for lookAt
-function Camera(){
-    var eye = vec3(0, 0, 10);         //camera location as a vec4, for mouse rotation
+function Camera(cvs){
+    const eyeDistance = 75;
+
+    var eye = vec3(0, 0, eyeDistance); //camera location as a vec4, for mouse rotation
     var at  = vec3(0.0, 0.0, 0.0);     //camera faces this location
-    var up  = vec3(0.0, 1.0, 0.0);     //orientation of camera, where up is above the camera
+    const up  = vec3(0.0, 1.0, 0.0);     //orientation of camera, where up is above the camera
 
     var trackingMouse = false;
     var oldX, oldY;
     var theta = [0,0,0];
 
-    this.init = function(cvs){
-        cvs.addEventListener("mousedown", beginTrackingMouse, false);
-        cvs.addEventListener("mouseup", stopTrackingMouse, false);
-        cvs.addEventListener("mouseout", stopTrackingMouse, false);
-        cvs.addEventListener("mousemove", mouseMove, false);
-    }
+    //add event listeners
+    cvs.addEventListener("mousedown", beginTrackingMouse, false);
+    cvs.addEventListener("mouseup", stopTrackingMouse, false);
+    cvs.addEventListener("mouseout", stopTrackingMouse, false);
+    cvs.addEventListener("mousemove", mouseMove, false);
 
     function beginTrackingMouse(e){
         trackingMouse = true;
@@ -45,6 +46,11 @@ function Camera(){
 
         theta[0] = (theta[0] - (dir[0] * dy)) % 360;    //rotate about x axis to have y move
         theta[1] = (theta[1] - (dir[1] * dx)) % 360;    //rotate about y axis to have x move
+    }
+
+    this.setCenter = function(x,y){
+        eye = vec3(x,y,eyeDistance);
+        at  = vec3(x,y,0);
     }
 
     this.getViewMatrix = function(){

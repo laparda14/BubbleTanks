@@ -17,7 +17,7 @@ NPC1.prototype.input = function(options){
 //slow, aims at player w/single bullets
 function NPC2(origX, origY, id){
 	Character.call(this, origX, origY, id, color.black);
-	this.turret = new Turret({bulletSpeed: .6, rotationSpeed: 1, delay: 250, baseOffset: 1.5, diameter: .7});
+	this.turret = new Turret({bulletSpeed: 1, rotationSpeed: 1, delay: 250, baseOffset: 1.5, diameter: .7});
 	this.base = new Ball(origX, origY, 1.5, this.material);
 	this.moveSpeed = .05;
 }

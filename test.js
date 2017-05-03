@@ -132,11 +132,13 @@ players.push(new NPC4(  0, 40,-4));
 var floor = new Floor();
 
 var projector;
-var camera = new Camera();
+var camera;
 var fps = new FPS();
 
 window.onload = function init() {
     canvas = document.getElementById("gl-canvas");
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
 
     gl = WebGLUtils.setupWebGL(canvas);
     if(!gl){
@@ -191,8 +193,7 @@ window.onload = function init() {
 
     //objects setup
     projector = new Projector(canvas);
-    // projector.init(canvas);
-    camera.init(canvas);
+    camera = new Camera(canvas);
 
     render();
 }
@@ -237,7 +238,7 @@ function render() {
     playerBallCollisionDetection();
     
     if(players[0].id == 1){ //center projector on player 1
-        projector.setCenter(players[0].base.x, players[0].base.y);
+       camera.setCenter(players[0].base.x, players[0].base.y);
     }
     //projector.setCenter((players[0].base.x + players[1].base.x)/2, (players[0].base.y + players[1].base.y)/2);
     projectionMatrix = projector.getProjectionMatrix();
