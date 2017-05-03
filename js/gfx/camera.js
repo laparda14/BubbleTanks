@@ -1,8 +1,8 @@
 //for lookAt
 function Camera(){
     var eye = vec3(0, 0, 10);         //camera location as a vec4, for mouse rotation
-    var at = vec3(0.0, 0.0, 0.0);     //camera faces this location
-    var up = vec3(0.0, 1.0, 0.0);     //orientation of camera, where up is above the camera
+    var at  = vec3(0.0, 0.0, 0.0);     //camera faces this location
+    var up  = vec3(0.0, 1.0, 0.0);     //orientation of camera, where up is above the camera
 
     var trackingMouse = false;
     var oldX, oldY;

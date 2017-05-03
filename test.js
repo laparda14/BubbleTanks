@@ -108,7 +108,7 @@ var p1Controls = {
     ccw: 69,    //e
     shoot: 32   //space
 }
-var p1 = new Player(-1, -1, -1, .2, color.blue, p1Controls);
+var p1 = new Player(-1, -1, 1, .2, color.blue, p1Controls);
 
 var p2Controls = {
     left: 37,   //arrow keys (on numpad)
@@ -119,17 +119,19 @@ var p2Controls = {
     ccw: 33,    //pgup
     shoot: 40   //down arrow 
 }
-var p2 = new Player(1, 1, -2, .2, color.red, p2Controls);
+var p2 = new Player(1, 1, 2, .2, color.red, p2Controls);
 
 var players = [];
 players.push(p1);
 // players.push(p2);
-players.push(new NPC2(-40,  0,1));
-players.push(new NPC1( 40,  0,2));
-players.push(new NPC3(  0,-40,3));
-players.push(new NPC4(  0, 40,4));
+players.push(new NPC1( 40,  0,-1));
+players.push(new NPC2(-40,  0,-2));
+players.push(new NPC3(  0,-40,-3));
+players.push(new NPC4(  0, 40,-4));
 
-var projector = new Projector();
+var floor = new Floor();
+
+var projector;
 var camera = new Camera();
 var fps = new FPS();
 
@@ -188,7 +190,8 @@ window.onload = function init() {
     });
 
     //objects setup
-    projector.init(canvas);
+    projector = new Projector(canvas);
+    // projector.init(canvas);
     camera.init(canvas);
 
     render();
@@ -233,12 +236,18 @@ function render() {
 
     playerBallCollisionDetection();
     
-    projector.setCenter(players[0].base.x, players[0].base.y);
+    if(players[0].id == 1){ //center projector on player 1
+        projector.setCenter(players[0].base.x, players[0].base.y);
+    }
     //projector.setCenter((players[0].base.x + players[1].base.x)/2, (players[0].base.y + players[1].base.y)/2);
     projectionMatrix = projector.getProjectionMatrix();
     gl.uniformMatrix4fv(glLocation.projectionMatrix, false, flatten(projectionMatrix));
 
     viewMatrix = camera.getViewMatrix();
+
+    var floorModel = floor.getModel();
+    setMaterialProperties(floorModel);
+    drawModel(floorModel);
 
     //draw models for players
     players.forEach(function(player){

@@ -14,16 +14,16 @@ function Ball(origx, origy, rds, material){
 
 	this.move = function(){
 		var worldEdge = 100;
-	    if(this.x + this.dx - this.scale[0] < -worldEdge){						//left wall
+	    if(this.x + this.dx - this.scale[0] < -worldEdge){	//left wall
 	    	this.dx = Math.abs(this.dx);
 	    }
-	    if(this.x + this.dx + this.scale[0] > worldEdge) {	//right wall
+	    if(this.x + this.dx + this.scale[0] > worldEdge){	//right wall
 	        this.dx = -Math.abs(this.dx);
 	    }
-	    if(this.y + this.dx - this.scale[1] < -worldEdge){						//upper wall
+	    if(this.y + this.dx - this.scale[1] < -worldEdge){	//upper wall
 	    	this.dy = Math.abs(this.dy);
 	    }
-	    if(this.y + this.dx + this.scale[1] > worldEdge) {	//lower wall
+	    if(this.y + this.dx + this.scale[1] > worldEdge){	//lower wall
 	        this.dy = -Math.abs(this.dy);
 	    }
 

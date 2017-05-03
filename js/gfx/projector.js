@@ -1,8 +1,8 @@
-function Projector(){
-    var top;       //to be used for left/right/top/bottom
+function Projector(cvs){
+    var top = 30;       //to be used for left/right/top/bottom
     const maxTop = 100;
     const minTop = 1;
-    const near = 0;     //plane where near = -z, to denote closest plane from objects
+    const near = -100;     //plane where near = -z, to denote closest plane from objects
     const far = 1000;   //plane where far = -z, to denote furthest plane from objects
 
     var center = {
@@ -10,10 +10,10 @@ function Projector(){
         y: 0
     }
 
-    this.init = function(cvs){
-        top = 30;
-        cvs.addEventListener("mousewheel", zoom, false);
-    }
+    cvs.addEventListener("mousewheel", zoom, false);
+    var aspectRatio = cvs.width/cvs.height;
+    var fovy = 45.0;
+     
 
     //zooming in and out via mouse wheel, as constrained by maxTop and minTop
     function zoom(e){
@@ -32,6 +32,7 @@ function Projector(){
     }
 
     this.getProjectionMatrix = function(){
+        // return perspective(fovy, aspectRatio, near, far);
         return ortho(-top + center.x, top + center.x, -top + center.y, top + center.y, near, far);
     }
 }
