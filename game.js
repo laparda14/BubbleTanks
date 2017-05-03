@@ -151,8 +151,8 @@ var p1Controls = {
     right: 68,  //d
     up: 87,     //w
     down: 83,   //s
-    cw: 81,     //q
-    ccw: 69,    //e
+    cw: 37,     //left
+    ccw: 39,    //right
     shoot: 32   //space
 }
 var p1 = new Player(-1, -1, 1, .2, color.blue, p1Controls);
@@ -298,7 +298,7 @@ function render() {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     textContext.clearRect(0, 0, textContext.canvas.width, textContext.canvas.height);
-    text.drawMiddleBottom("WASD to move, Q and E to rotate turret, SPACE to shoot, mouse scroll to zoom");
+    text.drawMiddleBottom("WASD to move, LEFT and RIGHT to rotate turret, SPACE to shoot, mouse scroll to zoom");
 
     //Player only actions (center camera, print game over
     if(players[0].id == 1){
