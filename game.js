@@ -254,7 +254,7 @@ window.onload = function init() {
 
     //objects setup
     projector = new Projector(textCanvas);
-    camera = new Camera(canvas);
+    camera = new Camera(textCanvas);
 
     render();
 }
@@ -312,6 +312,7 @@ function render() {
     }
     
     text.drawLeftTop("fps: " + fps.get());
+    //text.drawRightBottom("Darwin Huang 2017");
 
     playerBallCollisionDetection();    //collision detection
 

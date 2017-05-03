@@ -40,14 +40,14 @@ function Text(context){
 	}
 
 	this.drawRightBottom = function(text){
-		const x = context.canvas.width * .9;
+		const x = context.canvas.width * .99;
 		const y = context.canvas.height - defaultOptions.fontSize;
-		drawText({text: text, x: x, y: y});
+		drawText({text: text, x: x, y: y, align: 'right'});
 	}
 
 	this.drawLeftTop = function(text){
-		const x = context.canvas.width * .1;
+		const x = context.canvas.width * .01;
 		const y = 0 + defaultOptions.fontSize;
-		drawText({text: text, x: x, y: y});
+		drawText({text: text, x: x, y: y, align: 'left'});
 	}
 }
