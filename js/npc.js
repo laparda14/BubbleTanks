@@ -20,7 +20,7 @@ NPC1.prototype.input = function(options){
 function NPC2(origX, origY){
 	id = -1
 	Character.call(this, origX, origY, id, color.black);
-	this.turret = new Turret({bulletSpeed: 1, rotationSpeed: 1, delay: 250, baseOffset: 1.5, diameter: .7});
+	this.turret = new Turret({bulletSpeed: .8, rotationSpeed: 1, delay: 250, baseOffset: 1.5, diameter: .7});
 	this.base = new Ball(origX, origY, 1.5, this.material);
 	this.moveSpeed = .06;
 }
@@ -54,7 +54,7 @@ function NPC3(origX, origY){
 	Character.call(this, origX, origY, id, color.green);
 	this.turret = new Turret({bulletSpeed: .4, rotationSpeed: 20, delay: 10, baseOffset: 1.5, diameter: .7});
 	this.base = new Ball(origX, origY, 1.5, this.material);
-	this.moveSpeed = .15;
+	this.moveSpeed = .12;
 }
 
 NPC3.prototype = Object.create(Character.prototype);
@@ -73,9 +73,9 @@ NPC3.prototype.input = function(options){
 function NPC4(origX, origY){
 	id = -4
 	Character.call(this, origX, origY, id, color.yellow);
-	this.turret = new Turret({bulletSpeed: .25, rotationSpeed: 20, delay: 10, baseOffset: 1.5, diameter: .7});
-	this.base = new Ball(origX, origY, 1.5, this.material);
-	this.moveSpeed = .25;
+	this.turret = new Turret({bulletSpeed: .25, rotationSpeed: 20, delay: 10, baseOffset: 1.1, diameter: .7});
+	this.base = new Ball(origX, origY, 1.1, this.material);
+	this.moveSpeed = .2;
 }
 
 NPC4.prototype = Object.create(Character.prototype);

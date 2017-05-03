@@ -1,7 +1,7 @@
 function Turret(options){
 	var angle = options.angle || 0;
 	var bulletSpeed = options.bulletSpeed || .8;
-	var rotationSpeed = options.rotationSpeed || 2;
+	var rotationSpeed = options.rotationSpeed || 2.5;
 	
 	var delay = options.delay || 200;
 	var canShoot = true;

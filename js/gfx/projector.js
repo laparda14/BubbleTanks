@@ -3,7 +3,7 @@ function Projector(cvs){
     const far = 100;   //plane where far = -z, to denote furthest plane from objects
 
     var aspectRatio = cvs.width/cvs.height;
-    var fovy = 30.0;
+    var fovy = 40.0;
     var fovMax = 100.0;
     var fovMin = 2;
 

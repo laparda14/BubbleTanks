@@ -298,7 +298,7 @@ function render() {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     textContext.clearRect(0, 0, textContext.canvas.width, textContext.canvas.height);
-    text.drawMiddleBottom("WASD to move, w and e to rotate turret, mouse scroll to zoom");
+    text.drawMiddleBottom("WASD to move, Q and E to rotate turret, SPACE to shoot, mouse scroll to zoom");
 
     //Player only actions (center camera, print game over
     if(players[0].id == 1){
