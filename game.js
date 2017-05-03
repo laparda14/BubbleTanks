@@ -157,16 +157,21 @@ var p1Controls = {
 }
 var p1 = new Player(-1, -1, 1, .2, color.blue, p1Controls);
 
-var p2Controls = {
-    left: 37,   //arrow keys (on numpad)
-    right: 39,  
-    up: 38,
-    down: 12,   //clear (5 on numpad)
-    cw: 36,     //home
-    ccw: 33,    //pgup
-    shoot: 40   //down arrow 
+// var p2Controls = {
+//     left: 37,   //arrow keys (on numpad)
+//     right: 39,  
+//     up: 38,
+//     down: 12,   //clear (5 on numpad)
+//     cw: 36,     //home
+//     ccw: 33,    //pgup
+//     shoot: 40   //down arrow 
+// }
+// var p2 = new Player(1, 1, 2, .2, color.red, p2Controls);
+
+var projectorControls = {
+    zoomIn:  38,//up   arrow
+    zoomOut: 40 //down arrow
 }
-var p2 = new Player(1, 1, 2, .2, color.red, p2Controls);
 
 var players = [];
 players.push(p1);
@@ -253,7 +258,7 @@ window.onload = function init() {
     });
 
     //objects setup
-    projector = new Projector(textCanvas);
+    projector = new Projector(textCanvas, projectorControls);
     camera = new Camera(textCanvas);
 
     render();
@@ -298,21 +303,21 @@ function render() {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     textContext.clearRect(0, 0, textContext.canvas.width, textContext.canvas.height);
-    text.drawMiddleBottom("WASD to move, LEFT and RIGHT to rotate turret, SPACE to shoot, mouse scroll to zoom");
+    text.drawMiddleBottom("WASD to move, LEFT and RIGHT to rotate turret, SPACE to shoot, mouse scroll or UP and DOWN to zoom");
 
-    //Player only actions (center camera, print game over
+    projector.input(keys);
+    //Player only actions (center camera, print game over)
     if(players[0].id == 1){
        camera.setCenter(players[0].base.x, players[0].base.y);
        text.drawMiddleTop("lives: " + players[0].lives + "        score: " + score*100);
     }
-    else{   //game over
+    else{
         gameOver = true;
         text.drawMiddleMiddle("GAME OVER!");
         text.drawMiddleTop("lives: " + 0 + "        score: " + score*100);
     }
     
     text.drawLeftTop("fps: " + fps.get());
-    //text.drawRightBottom("Darwin Huang 2017");
 
     playerBallCollisionDetection();    //collision detection
 
