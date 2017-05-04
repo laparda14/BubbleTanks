@@ -52,10 +52,20 @@ Player.prototype.input = function(options){
 
     if(baseMoved){
         this.base.move();
+        this.sendToDB();
     }
 }
 
 Player.prototype.move = function(){
     //this.base.move(); //called in input function, so commented out here
     this.bullets.move();  //uncomment after implemented
+}
+
+Player.prototype.sendToDB = function(){
+    var base = {
+        x: this.base.x,
+        y: this.base.y,
+        turretAngle: this.turret.getAngle()
+    }
+    this.dbRef.set(base);
 }

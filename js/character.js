@@ -13,6 +13,7 @@ function Character(origX, origY, id, clr){
 	//defined in derived classes
 	this.base;
 	this.moveSpeed;
+	this.dbRef = firebase.database().ref('players/' + this.id);
 }
 
 Character.prototype.getModels = function(){

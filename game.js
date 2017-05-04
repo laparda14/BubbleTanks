@@ -145,6 +145,15 @@ function playerBallCollisionDetection(){
     }
 }
 
+function dbListenerSetup(player){
+        player.dbRef.on('value', function(snapshot){
+            var p = snapshot.val();
+            player.base.x = p.x;
+            player.base.y = p.y;
+            player.turret.setAngle(p.turretAngle);
+        });
+    }
+
 //players
 var p1Controls = {
     left: 65,   //a
@@ -175,6 +184,7 @@ var projectorControls = {
 
 var players = [];
 players.push(p1);
+dbListenerSetup(p1);
 // players.push(p2);
 
 players.push(spawner.getNPC());
