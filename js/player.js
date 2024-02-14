@@ -45,7 +45,7 @@ Player.prototype.input = function(options){
         	this.turret.rotate(1);
         }
 
-        if(key == this.keyMap.shoot){		//space
+        if(key == this.keyMap.shoot){		//m
         	this.tryShoot();
         }
     }
