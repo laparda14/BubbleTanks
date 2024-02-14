@@ -1,7 +1,7 @@
 function Character(origX, origY, id, clr){
 	this.id = id;
 	this.bullets = new BulletGroup({});
-	this.lives = 30;
+	this.lives = 3;
 	
 	this.material = {
 		ambient: clr,
