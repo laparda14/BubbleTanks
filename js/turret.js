@@ -3,7 +3,7 @@ function Turret(options){
 	var bulletSpeed = options.bulletSpeed || .8;
 	var rotationSpeed = options.rotationSpeed || 2.5;
 	
-	var delay = options.delay || 200;
+	var delay = options.delay || 0;
 	var canShoot = true;
 
 	//turret physical properties
