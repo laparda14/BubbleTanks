@@ -124,7 +124,7 @@ function playerBallCollisionDetection(){
                     var r2 = otherBullets[k].radius;
                     var rsq = (r1 + r2) * (r1 + r2);
                     if(rsq >= dr2){
-                        players[i].lives++;
+                        players[i].lives--;
                         players[j].bullets.removeBulletById(k);
                         if(players[i].lives <= 0){
                             players.splice(i, 1);       //player hit!!! 
