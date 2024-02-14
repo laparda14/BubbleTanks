@@ -153,7 +153,7 @@ var p1Controls = {
     down: 83,   //s
     cw: 37,     //left
     ccw: 39,    //right
-    shoot: 32   //space
+    shoot: 77   //m
 }
 var p1 = new Player(-1, -1, 1, .2, color.blue, p1Controls);
 
