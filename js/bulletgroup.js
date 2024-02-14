@@ -1,12 +1,12 @@
 function BulletGroup(options){
 	this.bullets = [];
 	var bulletsShot = 0;
-	var bulletLifetime = options.bulletLifetime || 50;
+	var bulletLifetime = options.bulletLifetime || 500;
 
 	this.push = function(bullet){
 		this.bullets.push(bullet);
 		bullet.lifetime = bulletLifetime;
-		bulletsShot++;
+		bulletsShot--;
 	}
 	this.getModels = function(){
 		var modelMatrices = [];
